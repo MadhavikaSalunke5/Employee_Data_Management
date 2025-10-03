@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- General Reset & Typography --- */
+        :root {
+            --primary-color: #4f46e5; /* Indigo-600 */
+            --primary-dark: #3730a3; /* Indigo-700 for hover */
+            --primary-light: #818cf8; /* Indigo-400 */
+            --text-color-primary: #1f2937; /* Darker gray */
+            --text-color-secondary: #4b5563; /* Medium gray */
+            --bg-light: #f9fafb; /* Very light gray */
+            --bg-accent: #eff2fc;
+            --shadow-md: 0 4px 12px rgba(79, 70, 229, 0.08), 0 2px 4px rgba(0,0,0,0.03);
+            --shadow-lg: 0 10px 25px rgba(79, 70, 229, 0.15), 0 5px 10px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, var(--bg-light), #e0e7ff);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: var(--text-color-secondary);
+        }
+        .container {
+            max-width: 950px; /* Slightly wider for more content space */
+            padding: 40px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            animation: fadeIn 0.5s ease-out; /* Added fade in animation */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: var(--primary-dark);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 30px;
+            font-size: 2.5rem; /* Larger title */
+            border-bottom: 3px solid var(--primary-light);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h3 {
+            color: var(--text-color-primary);
+            font-weight: 600;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Form Styling --- */
+        #employeeForm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            background: var(--bg-accent);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Lighter, more modern shadow for form */
+            align-items: center;
+        }
+        #employeeForm input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 2px solid #d1d5db; /* Neutral border color */
+            border-radius: 10px;
+            outline: none;
+            background: #fff;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #employeeForm input:focus {
+            border-color: var(--primary-color); /* Darker focus color */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        /* --- Button Styling --- */
+        button {
+            cursor: pointer;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            justify-self: stretch; /* Stretch button in the grid */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        button:hover {
+            background: var(--primary-dark); /* Darken on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Specific button colors */
+        .btn-edit {
+            background: #059669; /* Emerald-600 */
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+            padding: 8px 15px; /* Smaller action buttons */
+            font-size: 0.9rem;
+        }
+        .btn-edit:hover {
+            background: #047857; /* Emerald-700 */
+        }
+        .btn-delete {
+            background: #dc2626; /* Red-600 */
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+            padding: 8px 15px; /* Smaller action buttons */
+            font-size: 0.9rem;
+        }
+        .btn-delete:hover {
+            background: #b91c1c; /* Red-700 */
+        }
+
+        /* --- Table Styling --- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+        th, td {
+            text-align: left;
+            padding: 15px 18px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 400;
+            color: var(--text-color-primary);
+        }
+        th {
+            background: var(--primary-dark); /* Darker header for contrast */
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.7px; /* Slightly more spacing */
+            font-size: 0.8rem;
+            position: sticky; /* Keep header visible on scroll if container scrolls */
+            top: 0;
+        }
+        th:first-child { border-top-left-radius: 15px; }
+        th:last-child { border-top-right-radius: 15px; }
+
+        tbody tr {
+            background: #fff;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+        tbody tr:nth-child(even) {
+            background: var(--bg-accent); 
+        }
+        tbody tr:hover {
+            background: #e0e7ff;
+            box-shadow: inset 5px 0 0 0 var(--primary-color); /* Thicker highlight on hover */
+        }
+        td:last-child {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Responsive adjustment for the save button */
+        @media (min-width: 769px) {
+            #employeeForm button {
+                grid-column: 5 / 6; /* Position the save button specifically in the grid */
+                justify-self: end;
+            }
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 20px auto;
+            }
+            #employeeForm {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            button {
+                justify-self: stretch;
+            }
+            th, td { padding: 10px 8px; font-size: 0.9rem; }
+            h2 { font-size: 1.8rem; }
+            h3 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2><i class="fas fa-users-cog"></i> Employee Management System</h2>
+
+    <h3><i class="fas fa-user-plus"></i> Add / Update Employee</h3>
+    <form id="employeeForm">
+        <input type="hidden" id="employeeId">
+        <input type="text" id="name" placeholder="Full Name" required aria-label="Employee Name">
+        <input type="email" id="email" placeholder="Email Address" required aria-label="Employee Email">
+        <input type="text" id="department" placeholder="Department / Role" required aria-label="Employee Department">
+        <input type="number" id="salary" placeholder="Annual Salary ($)" required aria-label="Employee Salary">
+        <button type="submit" id="saveButton"><i class="fas fa-save"></i> Save Employee</button>
+    </form>
+
+    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+
+    <h3><i class="fas fa-table"></i> Current Employee List</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Salary</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTable"></tbody>
+    </table>
+</div>
+<script>
+    // Existing JavaScript remains here...
+    const apiUrl = "http://localhost:8080/api/employees";
+
+    async function fetchEmployees() {
+        try {
+            const res = await fetch(apiUrl);
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const employees = await res.json();
+            const table = document.getElementById("employeeTable");
+            table.innerHTML = "";
+
+            if (employees.length === 0) {
+                table.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-color-secondary);">
+                    <i class="fas fa-info-circle"></i> No employees found. Add one above!
+                </td></tr>`;
+                return;
+            }
+            
+            employees.forEach(emp => {
+                const formattedSalary = `$${parseFloat(emp.salary).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                table.innerHTML += `
+                <tr>
+                    <td>${emp.id}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.email}</td>
+                    <td>${emp.department}</td>
+                    <td>${formattedSalary}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editEmployee(${emp.id}, '${emp.name}', '${emp.email}', '${emp.department}', ${emp.salary})" title="Edit ${emp.name}"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="btn-delete" onclick="deleteEmployee(${emp.id})" title="Delete ${emp.name}"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+            document.getElementById("employeeTable").innerHTML = `<tr><td colspan="6" style="text-align: center; color: #dc2626; padding: 20px;">
+                <i class="fas fa-exclamation-triangle"></i> Could not connect to API. Is the server running?
+            </td></tr>`;
+        }
+    }
+
+    document.getElementById("employeeForm").addEventListener("submit", async function(e){
+        e.preventDefault();
+        const id = document.getElementById("employeeId").value;
+        const employee = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            department: document.getElementById("department").value,
+            salary: parseFloat(document.getElementById("salary").value)
+        };
+
+        const method = id ? "PUT" : "POST";
+        const url = id ? `${apiUrl}/${id}` : apiUrl;
+        const saveButton = document.getElementById("saveButton");
+
+        // UI Feedback: Disable button and change text
+        saveButton.disabled = true;
+        saveButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving...`;
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(employee)
+            });
+            
+            if (!response.ok) {
+                 throw new Error(`Server error: ${response.status}`);
+            }
+
+        } catch (error) {
+             console.error("Error saving employee:", error);
+             alert("Failed to save employee. Check console/network.");
+        } finally {
+            // Re-enable button and reset text
+            saveButton.disabled = false;
+            saveButton.innerHTML = `<i class="fas fa-save"></i> Save Employee`;
+        }
+
+        // Reset form fields
+        document.getElementById("employeeForm").reset();
+        document.getElementById("employeeId").value = "";
+        fetchEmployees();
+    });
+
+    window.editEmployee = function(id, name, email, department, salary) {
+        document.getElementById("employeeId").value = id;
+        document.getElementById("name").value = name;
+        document.getElementById("email").value = email;
+        document.getElementById("department").value = department;
+        document.getElementById("salary").value = salary;
+        
+        // Update Save button text for clarity
+        document.getElementById("saveButton").innerHTML = `<i class="fas fa-pen-to-square"></i> Update Employee`;
+
+        // Scroll to the form for better UX
+        document.getElementById("employeeForm").scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Add event listener to reset button text when user starts typing after an edit
+    document.getElementById("employeeForm").addEventListener('input', function() {
+        if (!document.getElementById("employeeId").value) {
+            document.getElementById("saveButton").innerHTML = `<i class="fas fa-save"></i> Save Employee`;
+        }
+    });
+
+
+    window.deleteEmployee = async function(id) {
+        if(confirm("Are you sure you want to delete this employee? This action cannot be undone.")) {
+            try {
+                await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+                fetchEmployees();
+            } catch (error) {
+                console.error("Error deleting employee:", error);
+                alert("Failed to delete employee. Check server connection.");
+            }
+        }
+    };
+
+    fetchEmployees();
+</script>
+</body>
+</html>
